@@ -1063,8 +1063,8 @@ function CreateGoogleSpreadSheet(userSubmittedTrackerId) {
 
   var userSumbittedTrackerFileType = userSubmittedTrackerFile.getMimeType();
 
-  if (userSumbittedTrackerFileType != MimeType.CSV ||
-        userSumbittedTrackerFileType != MimeType.MICROSOFT_EXCEL ||
+  if (userSumbittedTrackerFileType != MimeType.CSV &&
+        userSumbittedTrackerFileType != MimeType.MICROSOFT_EXCEL &&
         userSumbittedTrackerFileType != MimeType.MICROSOFT_EXCEL_LEGACY) {
 
     return null;
