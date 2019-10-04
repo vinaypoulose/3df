@@ -29,14 +29,14 @@ function onSubmit(e) {
 
   } catch (exception) {
 
-    MailApp.sendEmail(submitter, "vinay.poulose@akanksha.org", "3d Framework: Failed data upload",
-      "There was an error while trying to add your data to D3f!\n" + exception.toString());
+    MailApp.sendEmail(submitter + ", vinay.poulose@akanksha.org", "vinay.poulose@akanksha.org", "3d Framework: Failed data upload",
+      "There was an error while trying to add your data to D3f!\n" + exception.toString() + "\nSubmitted file: " + urlUserFile);
   }
 }
 
 function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFileConverted, urlUserFile) {
 
-  const schoolDashboardUrl = "https://docs.google.com/spreadsheets/d/1V4uQDxlSgSzAS8NLgP5hzTmzxsc-YcG1LrKlylZ8hOI/edit";
+  //const schoolDashboardUrl = "https://docs.google.com/spreadsheets/d/1V4uQDxlSgSzAS8NLgP5hzTmzxsc-YcG1LrKlylZ8hOI/edit";
   const multiAssmtTemplateUrl = "https://docs.google.com/spreadsheets/d/15-VQCg5M8vl8ZTzKu-Pmf_MjndM0kBpOmEeoUabfgQc/edit";
   const scoreBasedTemplateUrl = "https://docs.google.com/spreadsheets/d/1KCEHdEXlTwgkjjfqH2nP7EM8B9W1Y9yxTaV5pajcW8g/edit";
   const rubricBasedTemplateUrl = "https://docs.google.com/spreadsheets/d/1DA1c__U81IXS4ZwWSOj-ToXz1qAtReQSKyDj65gpkyc/edit";
@@ -71,7 +71,7 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
 
   if (idGoogleSheetUserFileConverted == null || idGoogleSheetUserFileConverted == "") {
 
-    emailBody.push("There was an error while trying to add the assessment data you submitted to D3:f\nCould not convert Google Sheet to Excel file");
+    emailBody.push("There was an error while trying to add the assessment data you submitted to 3df.\nCould not convert the submitted file to a Google Sheet\nMake sure you have submitted a Microsoft Excel file (.xlsx)");
     return emailBody.join("\n");
   }
 
@@ -93,16 +93,16 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
 
   var studentDb = googleSheetWithUserSubmittedContent.getRangeByName("tableStudentDb").getValues();
   var listSubjects = googleSheetWithUserSubmittedContent.getRangeByName("listSubjects").getValues();
-
   var school = googleSheetWithUserSubmittedContent.getRangeByName("school").getValue();
   var standard = googleSheetWithUserSubmittedContent.getRangeByName("standard").getValue();
-  var division = googleSheetWithUserSubmittedContent.getRangeByName("division").getValue();
-  var subject = googleSheetWithUserSubmittedContent.getRangeByName("subject").getValue();
+  var division = titleCase(googleSheetWithUserSubmittedContent.getRangeByName("division").getValue());
+  var subject = titleCase(googleSheetWithUserSubmittedContent.getRangeByName("subject").getValue());
   var date = googleSheetWithUserSubmittedContent.getRangeByName("date").getValue();
   var cceComponent = googleSheetWithUserSubmittedContent.getRangeByName("cceComponent").getValue();
   var tag = googleSheetWithUserSubmittedContent.getRangeByName("tag").getValue();
   var isRubricBasedAssessment = googleSheetWithUserSubmittedContent.getRangeByName("isRubricBasedAssessment").getValue();
   var isTermEndAssessment = googleSheetWithUserSubmittedContent.getRangeByName("isTermEndAssessment").getValue();
+  var assessmentType = "Formative";
   var includeInReportCard = googleSheetWithUserSubmittedContent.getRangeByName("includeInReportCard").getValue();
 
   //var isRubricBasedAssessment = googleSheetWithUserSubmittedContent.getRangeByName("tableUserEnteredValues").getValue();
@@ -152,7 +152,7 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
     }
   }
 
-  var schoolDashboard = SpreadsheetApp.openByUrl(schoolDashboardUrl);
+  var schoolDashboard = SpreadsheetApp.openByUrl(getSchoolDashboardUrl());
   var lockingPeriodInDays = schoolDashboard.getRangeByName("lockingPeriodInDays").getValue();
 
   isDateValid = isValidDate(date, lockingPeriodInDays, emailBody);
@@ -179,11 +179,12 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
 
   if (isTermEndAssessment != null && isTermEndAssessment.toString().toLowerCase() == "yes") {
 
-    isTermEndAssessment = "Summative";
+    isTermEndAssessment = true;
+    assessmentType = "Summative";
 
   } else {
 
-    isTermEndAssessment = "Formative";
+    isTermEndAssessment = false;
   }
 
   if (includeInReportCard != null && includeInReportCard.toString().toLowerCase() == "no") {
@@ -212,7 +213,7 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
   var assessmentId = makeKey([school, standard, division, subject, "" + Utilities.formatDate(date, "IST", "YYYYMMdd")]);
   var arrLog = [];
   var arrRowsToInsertInAssessmentDb = [];
-  var arrAssessmentDetails = [assessmentId, subject, date, cceComponent, tag, isRubricBasedAssessment, isTermEndAssessment, includeInReportCard];
+  var arrAssessmentDetails = [assessmentId, subject, date, cceComponent, tag, isRubricBasedAssessment, assessmentType, includeInReportCard];
 
 
   var permissionsDb = schoolDashboard.getRangeByName("permissionData").getValues();
@@ -388,7 +389,7 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
           row[8] = cceComponent;
           row[9] = tag;
           row[10] = isRubricBasedAssessment;
-          row[11] = isTermEndAssessment;
+          row[11] = assessmentType;
           row[12] = includeInReportCard;
 
           sheetTrackerDb.getRange(i + 1, 1, 1, 14).setValues([row]);
@@ -441,8 +442,8 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
 
     if (trackerExists == false) {
 
-      sheetTrackerDb.appendRow([timeStamp, responseId, assessmentId, urlGoogleSheetTracker, subject, date, standard, division, cceComponent, tag, isRubricBasedAssessment, isTermEndAssessment, includeInReportCard, "active"]);
-      schoolDashboard.getRangeByName("trackerData").getSheet().appendRow([timeStamp, responseId, assessmentId, urlGoogleSheetTracker, subject, date, standard, division, cceComponent, tag, isRubricBasedAssessment, isTermEndAssessment, includeInReportCard, "active"]);
+      sheetTrackerDb.appendRow([timeStamp, responseId, assessmentId, urlGoogleSheetTracker, subject, date, standard, division, cceComponent, tag, isRubricBasedAssessment, assessmentType, includeInReportCard, "active"]);
+      schoolDashboard.getRangeByName("trackerData").getSheet().appendRow([timeStamp, responseId, assessmentId, urlGoogleSheetTracker, subject, date, standard, division, cceComponent, tag, isRubricBasedAssessment, assessmentType, includeInReportCard, "active"]);
 
     } else {
 
@@ -475,7 +476,7 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
             currentRow[8] = cceComponent;
             currentRow[9] = tag;
             currentRow[10] = isRubricBasedAssessment;
-            currentRow[11] = isTermEndAssessment;
+            currentRow[11] = assessmentType;
             currentRow[12] = includeInReportCard;
 
             schoolDashboard.getRangeByName("trackerData").getSheet().getRange(i + 1, 1, 1, 14).setValues([currentRow]);
@@ -1062,9 +1063,16 @@ function CreateGoogleSpreadSheet(userSubmittedTrackerId) {
 
   var userSumbittedTrackerFileType = userSubmittedTrackerFile.getMimeType();
 
+  if (userSumbittedTrackerFileType != MimeType.CSV ||
+        userSumbittedTrackerFileType != MimeType.MICROSOFT_EXCEL ||
+        userSumbittedTrackerFileType != MimeType.MICROSOFT_EXCEL_LEGACY) {
+
+    return null;
+  }
+
   var userSubmittedFileContents = userSubmittedTrackerFile.getBlob();
 
-  const tempFolderId = "1dsV5N_-7jSpojynf0fxJL-_JAmXm7Zcv";
+  var tempFolderId = getTempFolderId();
 
   var resource = {
     title: userSubmittedTrackerFile.getName(),
@@ -1179,4 +1187,22 @@ function columnToLetter(column) {
     column = (column - temp - 1) / 26;
   }
   return letter;
+}
+
+function titleCase(string) {
+
+    var temp = string;
+
+    if (string != null) {
+
+        temp = string.toString().toUpperCase();
+
+        if (temp.length > 1) {
+
+            temp = temp.substr(0, 1) + temp.substr(1).toLowercase();
+        }
+
+    }
+
+    return temp;
 }
