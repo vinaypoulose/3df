@@ -1199,7 +1199,7 @@ function titleCase(string) {
 
         if (temp.length > 1) {
 
-            temp = temp.substr(0, 1) + temp.substr(1).toLowercase();
+            temp = temp.substr(0, 1) + temp.substr(1).toLowerCase();
         }
 
     }
