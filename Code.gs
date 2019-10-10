@@ -30,7 +30,7 @@ function onSubmit(e) {
   } catch (exception) {
 
     MailApp.sendEmail(submitter + ", vinay.poulose@akanksha.org", "vinay.poulose@akanksha.org", "3d Framework: Failed data upload",
-      "There was an error while trying to add your data to D3f!\n" + exception.toString() + "\nSubmitted file: " + urlUserFile);
+      "There was an error while trying to add your data to 3df!\n" + exception.toString() + "\nSubmitted file: " + urlUserFile);
   }
 }
 
