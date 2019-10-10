@@ -25,7 +25,7 @@ function onSubmit(e) {
 
     emailBody += onTrackerSubmit(timeStamp, responseId, submitter, googleSheetWithUserSubmittedContentId, urlUserFile);
 
-    MailApp.sendEmail(submitter, "vinay.poulose@akanksha.org", "3d Framework: Status of data upload", emailBody);
+    MailApp.sendEmail(submitter + ", vinay.poulose@akanksha.org", "vinay.poulose@akanksha.org", "3d Framework: Status of data upload", emailBody);
 
   } catch (exception) {
 
