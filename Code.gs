@@ -100,23 +100,36 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
     return emailBody.join("\n");
   }
 
-  var studentDb = googleSheetWithUserSubmittedContent.getRangeByName("tableStudentDb").getValues();
-  var listSubjects = googleSheetWithUserSubmittedContent.getRangeByName("listSubjects").getValues();
-  var school = googleSheetWithUserSubmittedContent.getRangeByName("school").getValue();
-  var standard = googleSheetWithUserSubmittedContent.getRangeByName("standard").getValue();
-  var division = titleCase(googleSheetWithUserSubmittedContent.getRangeByName("division").getValue());
-  var subject = titleCase(googleSheetWithUserSubmittedContent.getRangeByName("subject").getValue());
-  var date = googleSheetWithUserSubmittedContent.getRangeByName("date").getValue();
-  var cceComponent = googleSheetWithUserSubmittedContent.getRangeByName("cceComponent").getValue();
-  var tag = googleSheetWithUserSubmittedContent.getRangeByName("tag").getValue();
-  var isRubricBasedAssessment = googleSheetWithUserSubmittedContent.getRangeByName("isRubricBasedAssessment").getValue();
-  var isTermEndAssessment = googleSheetWithUserSubmittedContent.getRangeByName("isTermEndAssessment").getValue();
+  //var studentDb = googleSheetWithUserSubmittedContent.getRangeByName("tableStudentDb").getValues();
+  var studentDb = googleSheetWithUserSubmittedContent.getRange("studentMasterData!B:K").getValues();
+  //var listSubjects = googleSheetWithUserSubmittedContent.getRangeByName("listSubjects").getValues();
+  var listSubjects = googleSheetWithUserSubmittedContent.getRange("subjects!A1:A21").getValues();
+  //var school = googleSheetWithUserSubmittedContent.getRangeByName("school").getValue();
+  var school = googleSheetWithUserSubmittedContent.getRange("scores!F27").getValue();
+  //var standard = googleSheetWithUserSubmittedContent.getRangeByName("standard").getValue();
+  var standard = googleSheetWithUserSubmittedContent.getRange("scores!F28").getValue();
+  //var division = titleCase(googleSheetWithUserSubmittedContent.getRangeByName("division").getValue());
+  var division = titleCase(googleSheetWithUserSubmittedContent.getRange("scores!F29").getValue());
+  //var subject = titleCase(googleSheetWithUserSubmittedContent.getRangeByName("subject").getValue());
+  var subject = titleCase(googleSheetWithUserSubmittedContent.getRange("scores!F30").getValue());
+  //var date = googleSheetWithUserSubmittedContent.getRangeByName("date").getValue();
+  var date = googleSheetWithUserSubmittedContent.getRange("scores!F31").getValue();
+  //var cceComponent = googleSheetWithUserSubmittedContent.getRangeByName("cceComponent").getValue();
+  var cceComponent = googleSheetWithUserSubmittedContent.getRange("scores!F32").getValue();
+  //var tag = googleSheetWithUserSubmittedContent.getRangeByName("tag").getValue();
+  var tag = googleSheetWithUserSubmittedContent.getRange("scores!F33").getValue();
+  //var isRubricBasedAssessment = googleSheetWithUserSubmittedContent.getRangeByName("isRubricBasedAssessment").getValue();
+  var isRubricBasedAssessment = googleSheetWithUserSubmittedContent.getRange("variables!B5").getValue();
+  //var isTermEndAssessment = googleSheetWithUserSubmittedContent.getRangeByName("isTermEndAssessment").getValue();
+  var isTermEndAssessment = googleSheetWithUserSubmittedContent.getRange("scores!F34").getValue();
   var assessmentType = "Formative";
-  var includeInReportCard = googleSheetWithUserSubmittedContent.getRangeByName("includeInReportCard").getValue();
+  //var includeInReportCard = googleSheetWithUserSubmittedContent.getRangeByName("includeInReportCard").getValue();
+  var includeInReportCard = googleSheetWithUserSubmittedContent.getRange("scores!F35").getValue();
 
   //var isRubricBasedAssessment = googleSheetWithUserSubmittedContent.getRangeByName("tableUserEnteredValues").getValue();
 
-  var userEditingRange = googleSheetWithUserSubmittedContent.getRangeByName("tableUserEnteredValues");
+  //var userEditingRange = googleSheetWithUserSubmittedContent.getRangeByName("tableUserEnteredValues");
+  var userEditingRange = googleSheetWithUserSubmittedContent.getRange("scores!AN35:EJ191");
   var userEnteredValues = userEditingRange.offset(0, 0, userEditingRange.getLastRow(), userEditingRange.getLastColumn()).getValues();
 
   var tableStudentDetails = [];
@@ -274,7 +287,8 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
 
   } else if (isRubricBasedAssessment == "Rubric") {
 
-    var listRubric = googleSheetWithUserSubmittedContent.getRangeByName("listRubric").getValues();
+    //var listRubric = googleSheetWithUserSubmittedContent.getRangeByName("listRubric").getValues();
+    var listRubric = googleSheetWithUserSubmittedContent.getRange("rubric!A1:A10").getValues();
 
     for (i = listRubric.length; i > 0; i--) {
 
@@ -1204,14 +1218,15 @@ function titleCase(string) {
 
     if (string != null) {
 
-        temp = string.toString().toUpperCase();
-
-        if (temp.length > 1) {
-
-            temp = temp.substr(0, 1) + temp.substr(1).toLowerCase();
-        }
-
+      temp = string.toString().toLowerCase();
+      
+      return temp.replace(
+            /\w\S*/g,
+            function(txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1);
+            }
+        );
     }
-
+  
     return temp;
 }
