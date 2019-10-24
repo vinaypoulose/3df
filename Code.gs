@@ -539,7 +539,7 @@ function validateScoreBasedTracker(tableStudentDetails, tableMarksObtained, rowO
   colOffsetMarksObtained, rowOffsetSkills, rowTrackerMaxMarks,
   arrRowsToInsertInAssessmentDb, arrSubmissionDetails, arrAssessmentDetails, arrLog) {
 
-  var i, isTrackerValid = true;
+  var i, j, isTrackerValid = true;
   var arrMaxMarks = null;
   var arrIsMaxMarksValid = [];
   var arrIsMaxMarksEmpty = [];
@@ -650,7 +650,7 @@ function validateScoreBasedTracker(tableStudentDetails, tableMarksObtained, rowO
           }
 
           isTrackerValid = isTrackerValid && validateMarksObtained(maxMarks, isMaxMarksValid, isMaxMarksEmpty, marksObtained, isStudentIdAvailable,
-            isStudentPresent, i + rowOffsetMarksObtained, colOffsetMarksObtained, arrLog);
+            isStudentPresent, i + rowOffsetMarksObtained, j + colOffsetMarksObtained, arrLog);
 
 
           if (isTrackerValid == true && isStudentIdAvailable == true && isMaxMarksValid == true) {
