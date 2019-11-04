@@ -105,7 +105,7 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
   //var listSubjects = googleSheetWithUserSubmittedContent.getRangeByName("listSubjects").getValues();
   var listSubjects = googleSheetWithUserSubmittedContent.getRange("subjects!A1:A21").getValues();
   //var school = googleSheetWithUserSubmittedContent.getRangeByName("school").getValue();
-  var school = googleSheetWithUserSubmittedContent.getRange("scores!F27").getValue();
+  var school = googleSheetWithUserSubmittedContent.getRange("scores!F27").getValue().toString().toUpperCase();
   //var standard = googleSheetWithUserSubmittedContent.getRangeByName("standard").getValue();
   var standard = googleSheetWithUserSubmittedContent.getRange("scores!F28").getValue();
   //var division = titleCase(googleSheetWithUserSubmittedContent.getRangeByName("division").getValue());
@@ -158,7 +158,7 @@ function onTrackerSubmit(timeStamp, responseId, submitter, idGoogleSheetUserFile
           var gender = studentDb[i][3];
           var dateOfBirth = studentDb[i][4];
 
-          tableStudentDetails.push([studentId, firstName + " " + lastName, null, null, null, null, dateOfBirth, gender, school, standard, division]);
+          tableStudentDetails.push([studentId, firstName + " " + lastName, null, null, null, null, "dob", gender, school, standard, division]);
         }
       }
     }
@@ -1187,7 +1187,7 @@ function trimAndToLowerCaseAndRemoveExtraSpaces(str) {
 
   if (str != null) {
 
-    var temp = str.replace(/^\s+|\s+$/g, '');
+    var temp = str.toString().replace(/^\s+|\s+$/g, '');
     temp = temp.replace(/\s+/g, ' ');
     temp = temp.toLowerCase();
     return temp;
